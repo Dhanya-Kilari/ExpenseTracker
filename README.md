@@ -35,6 +35,9 @@ ExpenseTracker/
 ├── Main.java
 ├── README.md
 └── .gitignore
+```
+
+`expenses.txt` is generated locally to store expense data and is excluded from GitHub.
 
 ## ▶️ How to Run the Project
 1. Clone or download the repository.
