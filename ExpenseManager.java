@@ -41,7 +41,7 @@ public class ExpenseManager {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
 
             for (Expense expense : expenses) {
-                writer.write(expense.getCategory() + "," + expense.getAmount());
+                writer.write(expense.getCategory() + "," + expense.getAmount() + "," + expense.getDate());
                 writer.newLine();
             }
 
@@ -58,12 +58,13 @@ public class ExpenseManager {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
 
-                if (parts.length == 2) {
+                if (parts.length == 3) {
                     try {
                         String category = parts[0];
                         double amount = Double.parseDouble(parts[1]);
+                        String date = parts[2];
 
-                        expenses.add(new Expense(category, amount));
+                        expenses.add(new Expense(category, amount, date));
                     } catch (NumberFormatException e) {
                         System.out.println("Skipping invalid expense record.");
                     }
@@ -84,11 +85,11 @@ public class ExpenseManager {
         return false;
     }
     
-    public boolean updateExpense(int index, String category, double amount) {
+    public boolean updateExpense(int index, String category, double amount, String date) {
 
         if (index >= 0 && index < expenses.size() && amount > 0) {
 
-            Expense newExpense = new Expense(category, amount);
+            Expense newExpense = new Expense(category, amount, date);
 
             expenses.set(index, newExpense);
 
@@ -112,6 +113,45 @@ public class ExpenseManager {
         }
 
         return categoryTotals;
+    }
+
+    public HashMap<String, Double> getMonthlyTotals() {
+
+          HashMap<String, Double> monthlyTotals = new HashMap<>();
+
+          for (Expense expense : expenses) {
+              String month = expense.getDate().substring(3,10);
+
+              monthlyTotals.put(month,monthlyTotals.getOrDefault(month, 0.0) + expense.getAmount());
+            }
+            
+            return monthlyTotals;
+    }
+
+    public HashMap<String, Double> getDailyTotals() {
+
+       HashMap<String, Double> dailyTotals = new HashMap<>();
+
+       for (Expense expense : expenses) {
+           String date = expense.getDate();
+
+           dailyTotals.put(date,dailyTotals.getOrDefault(date, 0.0) + expense.getAmount());
+        }
+        
+        return dailyTotals;
+    }
+
+    public HashMap<String, Double> getYearlyTotals() {
+
+        HashMap<String, Double> yearlyTotals = new HashMap<>();
+
+        for (Expense expense : expenses) {
+           String year = expense.getDate().substring(6, 10);
+
+           yearlyTotals.put(year,yearlyTotals.getOrDefault(year, 0.0) + expense.getAmount());
+        }
+        
+        return yearlyTotals;
     }
     
     public ArrayList<Expense> searchByCategory(String category) {

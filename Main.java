@@ -19,7 +19,7 @@ public class Main {
         for (int i = 0; i < manager.getExpenses().size(); i++) {
             Expense e = manager.getExpenses().get(i);
 
-            System.out.println((i + 1) + ". " + e.getCategory() + " - Rs. " + e.getAmount());
+            System.out.println((i + 1) + ". " + e.getCategory() + " - Rs. " + e.getAmount() + " - " + e.getDate());
         }
     }
 
@@ -38,34 +38,42 @@ public class Main {
             System.out.println("4. Delete Expense");
             System.out.println("5. Update Expense");
             System.out.println("6. Category-Wise Expense Summary");
-            System.out.println("7. Search Expense by Category");
-            System.out.println("8. Highest & Lowest Expense");
-            System.out.println("9. Exit");
+            System.out.println("7. Monthly-Wise Expense Summary");
+            System.out.println("8. Daily-Wise Expense Summary");
+            System.out.println("9. Yearly-Wise Expense Summary");
+            System.out.println("10. Search Expense by Category");
+            System.out.println("11. Highest & Lowest Expense");
+            System.out.println("12. Exit");
 
             System.out.print("Enter your choice: ");
 
+            String input = sc.nextLine().trim();
+
+            if (input.isEmpty()) {
+                 System.out.println("Choice cannot be empty. Please enter a choice.");
+                 continue;
+            }
+
             try {
-                choice = sc.nextInt();
-                sc.nextLine();
+                 choice = Integer.parseInt(input);
             } 
-            catch (InputMismatchException e) {
-                System.out.println("Invalid input! Please enter a number.");
-                sc.nextLine();
-                continue;
+            catch (NumberFormatException e) {
+                   System.out.println("Invalid input! Please enter a number.");
+                   continue;
             }
 
             switch (choice) {
 
                 case 1:
-                    System.out.print("Enter category: ");
+                    System.out.print("Enter Expense Category: ");
                     String category = sc.nextLine().trim();
 
-                    if(category.isEmpty()){
-                        System.out.println("Category cannot be empty.");
+                    if(category.isEmpty() || !category.matches("[a-zA-Z ]+")){
+                        System.out.println("Invalid Category! Please enter text only.");
                         break;
                     }
 
-                    System.out.print("Enter amount: ");
+                    System.out.print("Enter Expense Amount: ");
 
                     double amount;
 
@@ -84,7 +92,10 @@ public class Main {
                         break;
                     }
 
-                    Expense expense = new Expense(category, amount);
+                    System.out.print("Enter Expense Date(dd-mm-yyyy): ");
+                    String date = sc.next();
+
+                    Expense expense = new Expense(category, amount, date);
                     manager.addExpense(expense);
 
                     System.out.println("Expense added successfully!");
@@ -99,6 +110,11 @@ public class Main {
                     break;
                 
                 case 4:
+                        if(manager.getExpenses().isEmpty()){
+                            displayExpenses(manager);
+                            break;
+                        }
+                        
                         displayExpenses(manager);
                         System.out.print("Enter expense number to delete: ");
                         int expenseNumber;
@@ -121,6 +137,11 @@ public class Main {
                             break;
                 
                 case 5:
+                    if(manager.getExpenses().isEmpty()){
+                            displayExpenses(manager);
+                            break;
+                        }
+                
                     displayExpenses(manager);
 
                     System.out.print("Enter expense number to update: ");
@@ -135,15 +156,15 @@ public class Main {
                         break;
                     }
 
-                    System.out.print("Enter new category: ");
+                    System.out.print("Enter New Expense Category: ");
                     String newCategory = sc.nextLine().trim();
 
-                    if(newCategory.isEmpty()){
-                        System.out.println("Category cannot be empty.");
+                    if(newCategory.isEmpty() || !newCategory.matches("[a-zA-Z ]+")){
+                        System.out.println("Invalid Category! Please enter text only.");
                         break;
                     }
 
-                    System.out.print("Enter new amount: ");
+                    System.out.print("Enter New Expense Amount: ");
                     double newAmount;
 
                     try {
@@ -161,7 +182,10 @@ public class Main {
                       break;
                     }
 
-                    if (manager.updateExpense(updateNumber - 1, newCategory, newAmount)) {
+                    System.out.print("Enter New Expense Date(dd-mm-yyyy): ");
+                    String newDate = sc.next();
+
+                    if (manager.updateExpense(updateNumber - 1, newCategory, newAmount, newDate)) {
                         System.out.println("Expense updated successfully!");
                     } 
                     else {
@@ -186,6 +210,30 @@ public class Main {
                         break;
 
                 case 7:
+                        HashMap<String, Double> monthlyTotals = manager.getMonthlyTotals();
+
+                        for (String month : monthlyTotals.keySet()) {
+                            System.out.println(month + " : " + monthlyTotals.get(month));
+                        }
+                        break;
+
+                case 8:
+                        HashMap<String, Double> dailyTotals = manager.getDailyTotals();
+
+                        for (String date1 : dailyTotals.keySet()) {
+                            System.out.println(date1 + " : " + dailyTotals.get(date1));
+                        }
+                        break;
+
+                case 9:
+                        HashMap<String, Double> yearlyTotals = manager.getYearlyTotals();
+
+                        for (String year : yearlyTotals.keySet()) {
+                              System.out.println(year + " : " + yearlyTotals.get(year));
+                            }
+                            break;
+
+                case 10:
                     System.out.print("Enter category to search: ");
                     String searchCategory = sc.nextLine().trim();
 
@@ -216,7 +264,7 @@ public class Main {
                     System.out.println("Total " + searchCategory+ " Expenses: Rs. " + searchTotal);
                     break;
 
-                case 8:
+                case 11:
                     Expense highest = manager.getHighestExpense();
                     Expense lowest = manager.getLowestExpense();
 
@@ -233,7 +281,7 @@ public class Main {
 
                     break;
 
-                case 9:
+                case 12:
                     System.out.println("Thank you for using Expense Tracker!");
                     break;
 
@@ -241,7 +289,7 @@ public class Main {
                     System.out.println("Invalid choice. Try again.");
             }
 
-        } while (choice != 9);
+        } while (choice != 11);
 
         sc.close();
     }

@@ -3,10 +3,12 @@ package ExpenseTracker;
 public class Expense {
     private String category;
     private double amount;
+    private String date;
 
-    public Expense(String category, double amount) {
+    public Expense(String category, double amount, String date) {
         this.category = category;
         this.amount = amount;
+        this.date = date;
     }
 
     public String getCategory() {
@@ -15,5 +17,9 @@ public class Expense {
 
     public double getAmount() {
         return amount;
+    }
+
+    public String getDate() {
+        return date;
     }
 }
